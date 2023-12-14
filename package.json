@@ -36,6 +36,7 @@
     "typescript": "^4.4.2"
   },
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "microbundle",
     "dev": "microbundle watch"
   }
