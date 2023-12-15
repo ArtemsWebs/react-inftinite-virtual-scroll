@@ -19,11 +19,18 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "husky": "^8.0.0",
+    "@storybook/addon-essentials": "^7.6.4",
+    "@storybook/addon-interactions": "^7.6.4",
+    "@storybook/addon-links": "^7.6.4",
+    "@storybook/addon-onboarding": "^1.0.10",
+    "@storybook/blocks": "^7.6.4",
+    "@storybook/react": "^7.6.4",
+    "@storybook/react-vite": "^7.6.4",
+    "@storybook/test": "^7.6.4",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "dotenv": "^16.0.3",
@@ -33,14 +40,25 @@
     "eslint-plugin-no-relative-import-paths": "^1.5.2",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-storybook": "^0.6.15",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "husky": "^8.0.0",
     "microbundle": "^0.15.1",
     "prettier": "2.7.1",
-    "typescript": "^4.4.2"
+    "storybook": "^7.6.4",
+    "typescript": "^5.0.0"
   },
   "scripts": {
+    "example": "npm run src/example/index.tsx",
     "test": "echo \"No test specified\"",
     "build": "microbundle",
-    "dev": "microbundle watch"
+    "dev": "microbundle watch -o dist/ --sourcemap false --no-compress --jsx React.createElement",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
   }
 }
