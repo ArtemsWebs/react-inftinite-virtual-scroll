@@ -4,9 +4,11 @@ import {
   RefObject,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import { isAsync } from '../../utils/utils';
 
 type PositionMode = 'lastChild' | 'middleChild' | 'firstChild';
 
@@ -14,7 +16,7 @@ export interface BasicInfiniteWrapperProps {
   positionMode?: PositionMode;
   Skeleton?: ReactNode;
   itemRef?: RefObject<HTMLElement>;
-  selectItemVisibleHandler?: () => void;
+  selectItemVisibleHandler?: () => void | Promise<void>;
   delay?: number;
 }
 
@@ -50,6 +52,7 @@ const BasicInfiniteWrapper = ({
   const [handlerFlag, setHandlerFlag] = useState(true);
   let refedPositionMode = useRef<PositionMode | null>(positionMode ?? null);
   let refedTimerId = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (positionMode !== refedPositionMode.current && !handlerFlag) {
       refedPositionMode.current = positionMode ?? null;
@@ -83,7 +86,8 @@ const BasicInfiniteWrapper = ({
           delay
         );
       } else {
-        selectItemVisibleHandler?.();
+        if (isAsync(selectItemVisibleHandler))
+          selectItemVisibleHandler?.()?.then(() => setHandlerFlag(true));
       }
       setHandlerFlag(false);
     }

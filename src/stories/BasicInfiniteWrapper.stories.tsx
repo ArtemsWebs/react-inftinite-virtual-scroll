@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import BasicInfiniteWrapper from '../components/BasicInfinityWrapper/BasicInfiniteWrapper';
+import {
+  mockChildren,
+  mockData,
+  mockRequestDataLink,
+} from '../mock/BaseInfiniteWrapper';
+import { useCallback, useRef, useState } from 'react';
+import { faker } from '@faker-js/faker';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof BasicInfiniteWrapper> = {
@@ -52,86 +59,73 @@ const meta: Meta<typeof BasicInfiniteWrapper> = {
 export default meta;
 type Story = StoryObj<typeof BasicInfiniteWrapper>;
 
-const mockChildren = (
-  <>
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-    <img
-      src="https://cdn3.emoji.gg/emojis/4496-brown-jump.gif"
-      width="128px"
-      height="128px"
-      alt="brown_jump"
-    />
-  </>
-);
-
-export const InfinityScroll: Story = {
+export const InfinityScrollBase: Story = {
   args: {
     positionMode: 'lastChild',
-    delay: 1000,
     selectItemVisibleHandler: () => alert('Выполнился хендлер'),
   },
   render: function Render(args) {
     return (
       <BasicInfiniteWrapper {...args}>{mockChildren}</BasicInfiniteWrapper>
+    );
+  },
+};
+
+export const InfinityScrollFetchData: Story = {
+  args: {
+    positionMode: 'lastChild',
+  },
+  render: function Render(args) {
+    const [linkIndex, setLinkIndex] = useState(1);
+    const [linkIndexDirection, setLinkIndexDirection] = useState(true);
+
+    const [localMockChildren, setLocalMockChildren] = useState(
+      mockRequestDataLink.map((link, index) => {
+        return (
+          <img
+            key={faker.commerce.isbn()}
+            src={link}
+            width={'128px'}
+            height={'128px'}
+          />
+        );
+      })
+    );
+
+    const selectItemVisibleHandler = useCallback(async () => {
+      const actualData = await mockData(linkIndex);
+      setLocalMockChildren((prevState) => [
+        ...prevState,
+        ...actualData.map((link, index) => {
+          return (
+            <img
+              key={faker.commerce.isbn()}
+              src={link}
+              width={'128px'}
+              height={'128px'}
+            />
+          );
+        }),
+      ]);
+      if (linkIndexDirection) {
+        setLinkIndex((prevState) => prevState + 1);
+      } else {
+        setLinkIndex((prevState) => prevState - 1);
+      }
+      if (linkIndex >= 0 && linkIndex < 2) {
+        setLinkIndexDirection(true);
+      } else if (linkIndex >= 2) {
+        setLinkIndexDirection(false);
+      }
+    }, [linkIndex, linkIndexDirection]);
+
+    return (
+      <BasicInfiniteWrapper
+        {...args}
+        selectItemVisibleHandler={async () => await selectItemVisibleHandler()}
+      >
+        {localMockChildren}
+      </BasicInfiniteWrapper>
     );
   },
 };
