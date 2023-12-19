@@ -1,53 +1,23 @@
 import {
   PropsWithChildren,
-  ReactNode,
-  RefObject,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
-import { isAsync } from '../../utils/utils';
-
-type PositionMode = 'lastChild' | 'middleChild' | 'firstChild';
-
-export interface BasicInfiniteWrapperProps {
-  positionMode?: PositionMode;
-  Skeleton?: ReactNode;
-  itemRef?: RefObject<HTMLElement>;
-  selectItemVisibleHandler?: () => void | Promise<void>;
-  delay?: number;
-}
-
-const getSelectNode = (childrenNodes?: HTMLCollection, mode?: PositionMode) => {
-  if (!childrenNodes || !mode) return;
-  switch (mode) {
-    case 'lastChild': {
-      return childrenNodes[childrenNodes.length - 1];
-    }
-    case 'firstChild': {
-      return childrenNodes[0];
-    }
-    case 'middleChild': {
-      const middlePosition = childrenNodes.length / 2;
-      if (String(middlePosition).includes('.'))
-        return childrenNodes[Math.ceil(middlePosition)];
-      return childrenNodes[middlePosition];
-    }
-    default: {
-      return childrenNodes[childrenNodes.length - 1];
-    }
-  }
-};
+import { isAsync } from '../../../utils/utils';
+import { BasicInfiniteProps, PositionMode } from '../types';
+import { getSelectNode } from '../utils';
 
 const BasicInfiniteWrapper = ({
   positionMode,
   itemRef,
   selectItemVisibleHandler,
   delay,
+  itemPercentVisible = 0,
   children,
-}: PropsWithChildren<BasicInfiniteWrapperProps>) => {
+  ...props
+}: PropsWithChildren<BasicInfiniteProps>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [handlerFlag, setHandlerFlag] = useState(true);
   let refedPositionMode = useRef<PositionMode | null>(positionMode ?? null);
@@ -69,14 +39,19 @@ const BasicInfiniteWrapper = ({
 
     let isVisibleElem = false;
 
-    if (selectedNodeRect)
+    if (selectedNodeRect) {
+      const selectedNodeTopWithPercentVisible =
+        selectedNodeRect.top +
+        selectedNodeRect.width * itemPercentVisible * 0.01;
+
       isVisibleElem =
         selectedNodeRect?.top > 0 &&
         selectedNodeRect.left > 0 &&
-        selectedNodeRect.top <=
+        selectedNodeTopWithPercentVisible <=
           (window.innerHeight || document.documentElement.clientHeight) &&
         selectedNodeRect.right <=
           (window.innerWidth || document.documentElement.clientWidth);
+    }
 
     if (isVisibleElem && handlerFlag) {
       if (delay) {
@@ -88,6 +63,9 @@ const BasicInfiniteWrapper = ({
       } else {
         if (isAsync(selectItemVisibleHandler))
           selectItemVisibleHandler?.()?.then(() => setHandlerFlag(true));
+        else {
+          selectItemVisibleHandler?.();
+        }
       }
       setHandlerFlag(false);
     }
@@ -102,7 +80,7 @@ const BasicInfiniteWrapper = ({
   }, [innerLogicFunc]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }} ref={wrapperRef}>
+    <div {...props} ref={wrapperRef}>
       {children}
     </div>
   );

@@ -1,3 +1,3 @@
-export function isAsync(func) {
-  return func.constructor.name === 'AsyncFunction';
+export function isAsync(func?: Function) {
+  return func?.constructor.name === 'AsyncFunction';
 }

@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import BasicInfiniteWrapper from '../components/Infinity/BasicInfinityWrapper/BasicInfiniteWrapper';
+import IntersectionInfiniteWrapper from '../components/Infinity/BasicInfinityWrapper/BasicInfiniteWrapper';
 import { mockChildren, mockData, mockRequestDataLink } from '../mock/Infinity';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { faker } from '@faker-js/faker';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
-const meta: Meta<typeof BasicInfiniteWrapper> = {
-  title: 'Example/BasicInfiniteWrapper',
-  component: BasicInfiniteWrapper,
+const meta: Meta<typeof IntersectionInfiniteWrapper> = {
+  title: 'Example/IntersectionInfiniteWrapper',
+  component: IntersectionInfiniteWrapper,
   parameters: {
     // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: 'centered',
@@ -55,21 +55,23 @@ const meta: Meta<typeof BasicInfiniteWrapper> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof BasicInfiniteWrapper>;
+type Story = StoryObj<typeof IntersectionInfiniteWrapper>;
 
-export const InfinityScrollBase: Story = {
+export const InfinityScrollIntersection: Story = {
   args: {
     positionMode: 'lastChild',
     selectItemVisibleHandler: () => alert('Выполнился хендлер'),
   },
   render: function Render(args) {
     return (
-      <BasicInfiniteWrapper {...args}>{mockChildren}</BasicInfiniteWrapper>
+      <IntersectionInfiniteWrapper {...args}>
+        {mockChildren}
+      </IntersectionInfiniteWrapper>
     );
   },
 };
 
-export const InfinityScrollFetchData: Story = {
+export const InfinityScrollIntersectionFetchData: Story = {
   args: {
     positionMode: 'lastChild',
   },
@@ -118,12 +120,12 @@ export const InfinityScrollFetchData: Story = {
     }, [linkIndex, linkIndexDirection]);
 
     return (
-      <BasicInfiniteWrapper
+      <IntersectionInfiniteWrapper
         {...args}
         selectItemVisibleHandler={async () => await selectItemVisibleHandler()}
       >
         {localMockChildren}
-      </BasicInfiniteWrapper>
+      </IntersectionInfiniteWrapper>
     );
   },
 };

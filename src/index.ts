@@ -1,2 +1,2 @@
-export { default as BasicInfiniteWrapper } from './components/BasicInfinityWrapper/BasicInfiniteWrapper';
-export { default as IntersectionInfiniteWrapper } from './components/IntersectionInfiniteWrapper/IntersectionInfiniteWrapper';
+export { default as BasicInfiniteWrapper } from './components/Infinity/BasicInfinityWrapper/BasicInfiniteWrapper';
+export { default as IntersectionInfiniteWrapper } from './components/Infinity/IntersectionInfiniteWrapper/IntersectionInfiniteWrapper';
